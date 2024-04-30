@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-const BackgroundColor = (ManualBackgroundColor) => {
+const BackgroundColor = ({selectedDeviceId}) => {
+  console.log(selectedDeviceId,"selectedCameraId ++");
     // const [Red, setRed] = useState();
     // const [Green, setGreen] = useState();
     // const [Blue, setBlue] = useState();
@@ -41,6 +42,7 @@ const BackgroundColor = (ManualBackgroundColor) => {
 
       // Example: Replace green pixels with a transparent pixel
       const pixels = imageData.data;
+      
       for (let i = 0; i < pixels.length; i += 4) {
         const r = pixels[i];
         const g = pixels[i + 1];
@@ -48,7 +50,7 @@ const BackgroundColor = (ManualBackgroundColor) => {
         // if (g > r && g > b && g > 100) { // Assuming green pixels have higher green values
         //   pixels[i + 3] = 0; // Set alpha to 0 (transparent)
         // }
-        if (g > r && g > b && g > 100) { // Assuming green pixels have higher green values
+        if (g > r && g > b && g > 50) { // Assuming green pixels have higher green values
           // Set alpha channel to a value that makes it appear yellow
           imageData.data[i] = Red.current;
           imageData.data[i + 1] = Green.current;
@@ -63,7 +65,12 @@ const BackgroundColor = (ManualBackgroundColor) => {
 
     const startCamera = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+          video: {
+            deviceId: { exact: selectedDeviceId } // Specify the deviceId of the camera you want to use
+          },
+        
+        });
         webcamVideoRef.current.srcObject = stream;
       } catch (err) {
         console.error('Error accessing camera:', err);
@@ -79,7 +86,7 @@ const BackgroundColor = (ManualBackgroundColor) => {
     return () => {
       webcamVideoRef.current.srcObject?.getTracks().forEach(track => track.stop());
     };
-  }, [videoSrc]);
+  }, [videoSrc,selectedDeviceId]);
 
 
   const colorVal = (e) => {
