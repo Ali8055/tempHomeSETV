@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-const BackgroundColor = ({selectedDeviceId}) => {
+const BackgroundImage = ({selectedDeviceId}) => {
   console.log(selectedDeviceId,"selectedCameraId ++");
     // const [Red, setRed] = useState();
     // const [Green, setGreen] = useState();
@@ -15,10 +15,18 @@ const BackgroundColor = ({selectedDeviceId}) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [greenThreshold, setGreenThreshold] = useState(0);
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    setVideoSrc(URL.createObjectURL(file));
+    setUploadedImage(URL.createObjectURL(file));
   };
+
+//   const handleFileChange = (event) => {
+//     const file = event.target.files[0];
+//     setVideoSrc(URL.createObjectURL(file));
+//   };
   const handleVideoLoadedMetadata = () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
@@ -31,35 +39,19 @@ const BackgroundColor = ({selectedDeviceId}) => {
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-
+    console.log(ctx,"ctx");
+    // let imageProcessed = false;
     const processFrame = () => {
-      // Draw the webcam video or uploaded video
+    //   // Draw the webcam video or uploaded video
       const video = videoSrc ? videoRef.current : webcamVideoRef.current;
-
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      console.log("processsss frame");
 
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        // Get RGB values from the top-left corner
-  const topLeftPixelIndex = 0; // Top-left corner pixel index
-  const topLeftPixelR = imageData.data[topLeftPixelIndex * 4];
-  const topLeftPixelG = imageData.data[topLeftPixelIndex * 4 + 1];
-  const topLeftPixelB = imageData.data[topLeftPixelIndex * 4 + 2];
 
-  // Alternatively, get RGB values from the top-right corner
-  const topRightPixelIndex = canvas.width - 1; // Top-right corner pixel index
-  const topRightPixelR = imageData.data[topRightPixelIndex * 4];
-  const topRightPixelG = imageData.data[topRightPixelIndex * 4 + 1];
-  const topRightPixelB = imageData.data[topRightPixelIndex * 4 + 2];
-
-  // Use the RGB values for your desired logic
-  console.log('Top-left pixel RGB:', topLeftPixelR, topLeftPixelG, topLeftPixelB);
-  console.log('Top-right pixel RGB:', topRightPixelR, topRightPixelG, topRightPixelB);
-  // Top-right pixel RGB: 57 159 123
-  // Top-left pixel RGB: 68 182 137
-
-      // Example: Replace green pixels with a transparent pixel
+    //   // Example: Replace green pixels with a transparent pixel
       const pixels = imageData.data;
-      
+      console.log(pixels,"pizell");
       for (let i = 0; i < pixels.length; i += 4) {
         const r = pixels[i];
         const g = pixels[i + 1];
@@ -70,14 +62,36 @@ const BackgroundColor = ({selectedDeviceId}) => {
         if (g > r && g > b && g > GreenByUser.current) { // Assuming green pixels have higher green values
           // if (r>10 && r<100 && g>100 && g<255 && b < 150) { // Assuming green pixels have higher green values
           // Set alpha channel to a value that makes it appear yellow
-          // imageData.data[i] = Red.current;
-          // imageData.data[i + 1] = Green.current;
-          // imageData.data[i + 2] = Blue.current;          
-          imageData.data[i + 3] = 0;          // You can adjust the values above to get the desired yellow shade
+          // console.log(uploadedImage,"upPPPPPPPPPPP");
+          if (uploadedImage !== null) {
+            // if (uploadedImage && !imageProcessed) { // 
+            console.log("right place",uploadedImage);
+            const img = new Image();
+
+             img.src = uploadedImage;
+            //  console.log(img,"imgGG");
+            const x = (i / 4) % canvas.width;
+            const y = Math.floor((i / 4) / canvas.width);
+            // Get the corresponding pixel color from the uploaded image
+            const pixelColor = getPixelColor(img, x, y);
+            // Set the pixel color in the canvas
+            pixels[i] = pixelColor.red;
+            pixels[i + 1] = pixelColor.green;
+            pixels[i + 2] = pixelColor.blue;
+            pixels[i + 3] = pixelColor.alpha;
+            // imageProcessed = true; 
+          // }else{
+          //   console.log("ELSEee");
+          //     imageData.data[i] = Red.current;
+          //     imageData.data[i + 1] = Green.current;
+          //     imageData.data[i + 2] = Blue.current;          
+          //     imageData.data[i + 3] = 255;          // You can adjust the values above to get the desired yellow shade
+          }
         }
       }
 
       ctx.putImageData(imageData, 0, 0);
+
       requestAnimationFrame(processFrame);
     };
 
@@ -104,9 +118,22 @@ const BackgroundColor = ({selectedDeviceId}) => {
     return () => {
       webcamVideoRef.current.srcObject?.getTracks().forEach(track => track.stop());
     };
-  }, [videoSrc,selectedDeviceId]);
-
-
+  }, [selectedDeviceId,uploadedImage]);
+  const getPixelColor = (img, x, y) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.drawImage(img, 0, 0);
+    const pixelData = ctx.getImageData(x, y, 1, 1).data;
+    console.log(pixelData,"pixelData");
+    return {
+      red: pixelData[0],
+      green: pixelData[1],
+      blue: pixelData[2],
+      alpha: pixelData[3]
+    };
+  }
   const colorVal = (e) => {
     console.log(e.target.value,"MY COLOR");
     const hexColor = e.target.value; 
@@ -131,24 +158,20 @@ const BackgroundColor = ({selectedDeviceId}) => {
       {/* {videoSrc && <video ref={videoRef} src={videoSrc} controls style={{ display: 'block' }} onLoadedMetadata={handleVideoLoadedMetadata} />} */}
 
       {/* Input for uploading video */}
-      {/* {!videoSrc && ( */}
         <input type="file" accept="video/*" onChange={handleFileChange} />
-      {/* )} */}
+
       {/* Canvas for green screen removal */}
-      <canvas  ref={canvasRef} 
-      
-      
-      className="size-auto bg-[url('/sunset.jpg')]" 
-      
-      
-      />
+      <canvas  ref={canvasRef} className='w-full h-full'  />
       Finializing
       <p>color</p>
       <input onChange={(e)=>GreenByUser.current = e.target.value} type='number' min={0} max={255}/>
-      <input onChange={(e)=>colorVal(e)} className=" absolute z-50 "  type="color" id="bg-color" />
+      <input onChange={(e)=>colorVal(e)} className='absolute z-50' type="color" id="bg-color" />
       <p>color</p>
+       <img src={uploadedImage} alt="Uploaded" />
+       <input type="file" accept="image/*" onChange={handleFileChange} />
+
     </div>
   );
 };
 
-export default BackgroundColor;
+export default BackgroundImage;

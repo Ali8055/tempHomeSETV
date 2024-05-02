@@ -16,6 +16,8 @@ import GreenScreenRemover from './GreenScreenRemover';
 import BackgroundColor from './BackgroundColor';
 import Webcam from 'react-webcam';
 import AllCameras from './AllCameras';
+import BackgroundImage from './BackgroundImage';
+import ChangeImage from './ChangeImage';
 
 const MainPanel = () => {
   const customColorRef = useRef();
@@ -96,7 +98,10 @@ const MainPanel = () => {
     <div className="relative h-screen w-screen">
       {/* <video className="h-full w-full z-1" src={videoBg} autoPlay loop muted /> */}
       {/* <div className="h-full w-full z-1"> */}
-        <BackgroundColor selectedDeviceId={selectedDeviceId}/>
+        <BackgroundColor selectedDeviceId={selectedDeviceId}/> 
+        {/* <BackgroundImage selectedDeviceId={selectedDeviceId}/> */}
+      {/* <ChangeImage selectedDeviceId={selectedDeviceId}/> */}
+      
       {/* </div> */}
       {
         // <div className="absolute top-0  p-8 h-full w-full z-10 border-10">
