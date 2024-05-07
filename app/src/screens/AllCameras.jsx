@@ -9,6 +9,8 @@ const AllCameras = ({setSelectedDeviceId}) => {
       try {
         const devices = await navigator.mediaDevices.enumerateDevices();
         const cameras = devices.filter(device => device.kind === 'videoinput');
+        console.log(cameras,"CAMMMM");
+        
         setCameras(cameras);
       } catch (error) {
         console.error('Error fetching cameras:', error);

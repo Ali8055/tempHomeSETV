@@ -98,9 +98,9 @@ const MainPanel = () => {
     <div className="relative h-screen w-screen">
       {/* <video className="h-full w-full z-1" src={videoBg} autoPlay loop muted /> */}
       {/* <div className="h-full w-full z-1"> */}
-        <BackgroundColor selectedDeviceId={selectedDeviceId}/> 
-        {/* <BackgroundImage selectedDeviceId={selectedDeviceId}/> */}
-      {/* <ChangeImage selectedDeviceId={selectedDeviceId}/> */}
+        {/* <BackgroundColor selectedDeviceId={selectedDeviceId}/>  */}
+        <BackgroundColor selectedDeviceId={selectedDeviceId}/>
+      {/* <ChangeImage /> */}
       
       {/* </div> */}
       {
