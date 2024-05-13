@@ -94,13 +94,29 @@ useEffect(() => {
           </div>
           <div id="right">
             {/* <Button component={GroupIcon} /> */}
-            <input
+            {/* <input
         onChange={(e) => (GreenByUser.current = e.target.value)}
         type="number"
         min={0}
         max={255}
         className="border-2 bg-red-600"
-      />
+      /> */}
+<div className="flex items-center space-x-4">
+  {/* <input
+    onChange={(e) => (GreenByUser.current = e.target.value)}
+    type="number"
+    min={0}
+    max={255}
+    className="border-2 border-gray-300 bg-white rounded-md py-2 px-4 focus:outline-none focus:border-blue-500"
+  /> */}
+  <input
+    onChange={(e) => (GreenByUser.current = e.target.value)}
+    type="range"
+    min={0}
+    max={255}
+    className="h-4 appearance-none rounded-full w-64 bg-green-300"
+  />
+</div>
           </div>
         </div>
       </div>
