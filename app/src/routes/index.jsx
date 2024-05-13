@@ -2,8 +2,8 @@ import { Route, Routes } from 'react-router-dom'
 
 // Import your components
 // import LoginScreen from '@renderer/components/screens/LoginScreen'
-import LoginScreen from '../screens/LoginScreen'
-import MainPanel from '../screens/MainPanel'
+import LoginScreen from '../pages/LoginScreen'
+import MainPanel from '../pages/MainPanel'
 import Layout from '../components/Layout'
 // import WebcamCapture from '@renderer/components/screens/MultiWebcam'
 // Define your routes

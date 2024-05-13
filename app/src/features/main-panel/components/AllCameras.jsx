@@ -21,10 +21,10 @@ const AllCameras = ({setSelectedDeviceId}) => {
   }, []);
 
   return (
-    <div className='flex'>
+    <div className='flex h-full bg-stone-950/[.30] overflow-x-auto rounded min-h-24 max-w-sm'>
       {cameras.map((camera, index) => (
 
-            <div className='p-4' 
+            <div className='p-2 ' 
             onClick={(e)=>{ 
                 e.preventDefault();
                 console.log(camera.deviceId,"click",e);
@@ -34,10 +34,10 @@ const AllCameras = ({setSelectedDeviceId}) => {
                 <Webcam
                     audio={false}
                     videoConstraints={{ deviceId: camera.deviceId }}
-                    height={200}
-                    width={300}
+                    // width={300}
+                    style={{ height: '60px', }}
                 />
-                <p>Camera {index + 1}</p>
+                <p className='justify-center align-items-center'>Camera {index + 1}</p>
             </div>
       ))}
     </div>
