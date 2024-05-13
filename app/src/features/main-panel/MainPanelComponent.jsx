@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import AllCameras from './components/AllCameras';
 import BackgroundColor from '../../pages/BackgroundColor';
 import Dropdown from '../../components/ui-components/DropDown';
@@ -15,72 +15,52 @@ import { SettingsIcon } from '../../assets/icons/SettingsIcon';
 
 const MainPanelComponent = () => {
   const [isFolded, setIsFolded] = useState(false);
+  const [selectedDeviceId, setSelectedDeviceId] = useState(null);
+  const webcamVideoRef = useRef(null);
+  const GreenByUser = useRef(Number);
 
   const toggleFold = () => {
     setIsFolded(!isFolded);
   };
+
+  const handleStream = async (deviceId) => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { deviceId },
+      });
+      console.log(stream, 'SSt');
+      webcamVideoRef.current.srcObject = stream;
+      return stream;
+    } catch (error) {}
+  };
+
+useEffect(() => {
+    if (selectedDeviceId) {
+      console.log('Device Selected', selectedDeviceId);
+      const initializeStreams = async () => {
+        const stream = await handleStream(selectedDeviceId);
+
+        // videoRefs.current = Array.from({ length: 4 }, () => ({ current: stream }));
+        // // Set stream to video elements
+        // videoRefs.current.forEach((ref, index) => {
+        //        console.log(stream,"SSVV");
+        //       ref.current.srcObject = stream;
+        //       console.log(ref.current.srcObject.srcObject,"reff src Obj");
+        //     });
+      };
+
+      initializeStreams();
+    }
+  }, [selectedDeviceId]);
+
   return (
-    // <div className=" h-screen w-screen">
-    //   <div className="absolute top-0  p-8 h-full w-full z-10 border-10">
-    //     <div className="relative h-full w-full">
-    //       <div id="top" className="absolute top-0 w-full"></div>
-    //       <div id="bottom" className="absolute bottom-0 w-full">
-
-    //       </div>
-    //     </div>
-    //   </div>
-
+    <>
+      <div className='flex flex-wrap content-center justify-center absolute w-full h-full'>
+   
+      <BackgroundColor selectedDeviceId={selectedDeviceId} GreenByUser={GreenByUser}/>
+      </div>
+      
     <div class=" h-screen w-screen flex flex-col z-10 p-8">
-      {/* <div className="flex h-1/2">
-          <div className="flex  align-items-center w-full justify-between">
-            <div id="left">
-              <Dropdown />
-
-            </div>
-            <div id="middle" className="flex">
-              <Button component={MovieCameraIcon} />
-              <Button component={MonitorIcon} />
-              <Button component={FilmReelIcon} />
-              <Button component={ProfileIcon} />
-     
-            </div>
-            <div id="right" className="">
-              <Button component={GalleryIcon} />
-              <Button component={EnableMicIcon} />
-              <Button component={ChatIcon} />
-              <Button component={GroupIcon} />
-              <Button component={SettingsIcon} />
-              <input
-                onChange={(e) => {
-                  console.log(e.target.value, 'color VAll');
-                }}
-                type="color"
-                id="bg-color"
-              />
-            </div>
-          </div>
-        </div> */}
-      {/* <div className={`flex justify-center items-center h-1/2`}>
-
-          <div className="w-60 h-1/2">
-        
-            <div className="bg-red-700 h-[70%]">
-              <AllCameras />
-            </div>
-          </div>
-
-          <div className="flex  align-items-center w-full justify-between">
-              <div id="left">
-                <Button component={GroupIcon} />
-              </div>
-              <div id="middle">
-                <Button component={GroupIcon} />
-              </div>
-              <div id="right">
-                <Button component={GroupIcon} />
-              </div>
-            </div>
-        </div> */}
       <div className="flex justify-between h-1/2 w-full ">
         <div id="left">
           <Dropdown />
@@ -99,11 +79,10 @@ const MainPanelComponent = () => {
           <Button component={SettingsIcon} />
         </div>
       </div>
-      {/* <div className="h-1/2 w-full bg-green-400"></div> */}
       <div className="relative h-1/2 ">
         <div className="h-full w-full absolute p-8 flex flex-wrap justify-center content-center  ">
           <div className='h-1/3'>
-          <AllCameras/>
+          <AllCameras setSelectedDeviceId={setSelectedDeviceId} />
           </div>
         </div>
         <div className=" w-full absolute bottom-0 flex align-items-center justify-between">
@@ -114,12 +93,19 @@ const MainPanelComponent = () => {
             <Button component={GroupIcon} />
           </div>
           <div id="right">
-            <Button component={GroupIcon} />
+            {/* <Button component={GroupIcon} /> */}
+            <input
+        onChange={(e) => (GreenByUser.current = e.target.value)}
+        type="number"
+        min={0}
+        max={255}
+        className="border-2 bg-red-600"
+      />
           </div>
         </div>
       </div>
     </div>
-    // </div>
+    </>
   );
 };
 
