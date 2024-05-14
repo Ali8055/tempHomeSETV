@@ -12,6 +12,7 @@ import { EnableMicIcon } from '../../assets/icons/EnableMicIcon';
 import { ChatIcon } from '../../assets/icons/ChatIcon';
 import { GroupIcon } from '../../assets/icons/GroupIcon';
 import { SettingsIcon } from '../../assets/icons/SettingsIcon';
+import EnhancedBackgroundColor from '../../pages/EnhancedBackgroundColor';
 
 const MainPanelComponent = () => {
   const [isFolded, setIsFolded] = useState(false);
@@ -57,7 +58,8 @@ useEffect(() => {
     <>
       <div className='flex flex-wrap content-center justify-center absolute w-full h-full'>
    
-      <BackgroundColor selectedDeviceId={selectedDeviceId} GreenByUser={GreenByUser}/>
+      {/* <BackgroundColor selectedDeviceId={selectedDeviceId} GreenByUser={GreenByUser}/> */}
+      <EnhancedBackgroundColor selectedDeviceId={selectedDeviceId} GreenByUser={GreenByUser}/>
       </div>
       
     <div class=" h-screen w-screen flex flex-col z-10 p-8">
