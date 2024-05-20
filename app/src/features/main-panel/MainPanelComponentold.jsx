@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import AllCameras from './components/AllCameras';
-import EnhancedBackgroundColor from '../../pages/EnhancedBackgroundColor';
+import BackgroundColor from '../../pages/BackgroundColor';
 import Dropdown from '../../components/ui-components/DropDown';
 import { Button } from '../../components/ui-components/Button';
 import { MovieCameraIcon } from '../../assets/icons/MovieCameraIcon';
@@ -12,12 +12,13 @@ import { EnableMicIcon } from '../../assets/icons/EnableMicIcon';
 import { ChatIcon } from '../../assets/icons/ChatIcon';
 import { GroupIcon } from '../../assets/icons/GroupIcon';
 import { SettingsIcon } from '../../assets/icons/SettingsIcon';
-import { throttle, debounce } from 'lodash';
+import EnhancedBackgroundColor from '../../pages/EnhancedBackgroundColor';
 
 const MainPanelComponent = () => {
   const [isFolded, setIsFolded] = useState(false);
   const [selectedDeviceId, setSelectedDeviceId] = useState(null);
   const webcamVideoRef = useRef(null);
+  const GreenByUser = useRef(Number);
 
   const [greenThreshold, setGreenThreshold] = useState(128);
   const [brightness, setBrightness] = useState(0);
@@ -26,42 +27,49 @@ const MainPanelComponent = () => {
   const [saturation, setSaturation] = useState(0.4);
   const [lightness, setLightness] = useState(0.2);
 
-  // Throttle input change handlers
-  const throttledSetGreenThreshold = useRef(throttle((value) => setGreenThreshold(value), 100)).current;
-  const throttledSetBrightness = useRef(throttle((value) => setBrightness(value), 100)).current;
-  const throttledSetContrast = useRef(throttle((value) => setContrast(value), 100)).current;
-  const throttledSetSaturation = useRef(throttle((value) => setSaturation(value), 100)).current;
-  const throttledSetLightness = useRef(throttle((value) => setLightness(value), 100)).current;
-
-  // Debounce processing of the video frame
-  const debouncedProcessFrame = useRef(debounce(() => {
-    // Your processing logic here
-  }, 100)).current;
+  const toggleFold = () => {
+    setIsFolded(!isFolded);
+  };
 
   const handleStream = async (deviceId) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { deviceId },
       });
+      console.log(stream, 'SSt');
       webcamVideoRef.current.srcObject = stream;
-    } catch (error) {
-      console.error('Error accessing camera:', error);
-    }
+      return stream;
+    } catch (error) {}
   };
 
   useEffect(() => {
     if (selectedDeviceId) {
-      const initializeStream = async () => {
-        await handleStream(selectedDeviceId);
+      console.log('Device Selected', selectedDeviceId);
+      const initializeStreams = async () => {
+        const stream = await handleStream(selectedDeviceId);
+
+        // videoRefs.current = Array.from({ length: 4 }, () => ({ current: stream }));
+        // // Set stream to video elements
+        // videoRefs.current.forEach((ref, index) => {
+        //        console.log(stream,"SSVV");
+        //       ref.current.srcObject = stream;
+        //       console.log(ref.current.srcObject.srcObject,"reff src Obj");
+        //     });
       };
-      initializeStream();
+
+      initializeStreams();
     }
   }, [selectedDeviceId]);
 
   return (
     <>
       <div className="flex flex-wrap content-center justify-center absolute w-full h-full">
-        <EnhancedBackgroundColor
+        {/* <BackgroundColor selectedDeviceId={selectedDeviceId} GreenByUser={GreenByUser}/> */}
+        {/* <EnhancedBackgroundColor
+          selectedDeviceId={selectedDeviceId}
+          GreenByUser={GreenByUser}
+        /> */}
+             <EnhancedBackgroundColor
           selectedDeviceId={selectedDeviceId}
           greenThreshold={greenThreshold}
           brightness={brightness}
@@ -69,11 +77,10 @@ const MainPanelComponent = () => {
           hue={hue}
           saturation={saturation}
           lightness={lightness}
-          
         />
       </div>
 
-      <div className="h-screen w-screen flex flex-col z-10 p-8">
+      <div class=" h-screen w-screen flex flex-col z-10 p-8">
         <div className="flex justify-between h-1/2 w-full ">
           <div id="left">
             <Dropdown />
@@ -106,37 +113,56 @@ const MainPanelComponent = () => {
               <Button component={GroupIcon} />
             </div>
             <div id="right">
-              <div className="items-center space-x-4">
-              GreenThreshold
+              {/* <Button component={GroupIcon} /> */}
+              {/* <input
+        onChange={(e) => (GreenByUser.current = e.target.value)}
+        type="number"
+        min={0}
+        max={255}
+        className="border-2 bg-red-600"
+      /> */}
+              <div className="flex items-center space-x-4">
+                {/* <input
+    onChange={(e) => (GreenByUser.current = e.target.value)}
+    type="number"
+    min={0}
+    max={255}
+    className="border-2 border-gray-300 bg-white rounded-md py-2 px-4 focus:outline-none focus:border-blue-500"
+  /> */}
+                {/* <input
+                  onChange={(e) => (GreenByUser.current = e.target.value)}
+                  type="range"
+                  min={0}
+                  max={255}
+                  className="h-4 appearance-none rounded-full w-64 bg-green-300"
+                /> */}
+
                 <input
-                  onChange={(e) => throttledSetGreenThreshold(parseInt(e.target.value))}
+                  onChange={(e) => setGreenThreshold(parseInt(e.target.value))}
                   type="range"
                   min={0}
                   max={255}
                   className="h-4 appearance-none rounded-full w-64 bg-green-300"
                   value={greenThreshold}
                 />
-                Brightness
                 <input
-                  onChange={(e) => throttledSetBrightness(parseInt(e.target.value))}
+                  onChange={(e) => setBrightness(parseInt(e.target.value))}
                   type="range"
                   min={-255}
                   max={255}
                   className="h-4 appearance-none rounded-full w-64 bg-gray-300"
                   value={brightness}
                 />
-                Contrast
                 <input
-                  onChange={(e) => throttledSetContrast(parseInt(e.target.value))}
+                  onChange={(e) => setContrast(parseInt(e.target.value))}
                   type="range"
                   min={-255}
                   max={255}
                   className="h-4 appearance-none rounded-full w-64 bg-gray-300"
                   value={contrast}
                 />
-                Saturation
                 <input
-                  onChange={(e) => throttledSetSaturation(parseFloat(e.target.value))}
+                  onChange={(e) => setSaturation(parseFloat(e.target.value))}
                   type="range"
                   min={0}
                   max={1}
@@ -144,9 +170,8 @@ const MainPanelComponent = () => {
                   className="h-4 appearance-none rounded-full w-64 bg-gray-300"
                   value={saturation}
                 />
-                Lightness
                 <input
-                  onChange={(e) => throttledSetLightness(parseFloat(e.target.value))}
+                  onChange={(e) => setLightness(parseFloat(e.target.value))}
                   type="range"
                   min={0}
                   max={1}
@@ -156,7 +181,9 @@ const MainPanelComponent = () => {
                 />
                 <input
                   onChange={(e) => {
-                    const hueValues = e.target.value.split(',').map(parseFloat);
+                    const hueValues = e.target.value
+                      .split(',')
+                      .map((v) => parseFloat(v));
                     setHue(hueValues);
                   }}
                   type="text"
