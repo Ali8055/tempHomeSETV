@@ -154,6 +154,7 @@ const MainPanelComponent = () => {
                   className="h-4 appearance-none rounded-full w-64 bg-gray-300"
                   value={lightness}
                 />
+                hueValues
                 <input
                   onChange={(e) => {
                     const hueValues = e.target.value.split(',').map(parseFloat);
